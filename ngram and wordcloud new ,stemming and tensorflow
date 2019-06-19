@@ -1,0 +1,178 @@
+import pandas as pd
+
+emp_lst=[]
+with open(r"C:\Users\AKHIL\Desktop\R csv\MrModi_Speech_IndependenceDay_20171.txt")as fileinput:
+    for line in fileinput:
+        line=line.lower()
+        emp_lst.append(line)
+        
+emp_lst
+
+import string
+import re
+import nltk
+from nltk.util import ngrams
+from nltk .corpus import stopwords
+
+emp_lst=str(emp_lst)
+
+emp_lst_refined=[i for i in emp_lst if i not in string.punctuation]
+emp_lst_refined="".join(emp_lst_refined)
+emp_lst_refined
+
+aa=emp_lst_refined.split(" ")
+abc=[word for word in aa if word not in stopwords.words("english")]
+
+tokens1=[token for token in abc if token !=""] ### if token not equal to spaces
+output=list((ngrams(tokens1,3)))## 3 for trygram,2 for bigram,5 for ngram
+output
+from matplotlib import style
+from matplotlib import pylab
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+output1=str(output)
+cloud=WordCloud().generate(output1)
+plt.imshow(cloud)
+wc=WordCloud(background_color='white',max_words=15)
+wc_img=wc.generate(output1)
+plt.imshow(wc_img)
+from nltk.stem.wordnet import WordNetLemmatizer
+lmtz=WordNetLemmatizer()
+lmtz.lemmatize("cars")
+# POS(Part of speech)
+
+abc="India is a beautiful country"
+aa=abc.split()
+nltk.pos_tag(aa)  ####  NN means noun
+
+
+# CC	coordinating conjunction
+# CD	cardinal digit
+# DT	determiner
+# EX	existential there (like: "there is" ... think of it like "there exists")
+# FW	foreign word
+# IN	preposition/subordinating conjunction
+# JJ	adjective	'big'
+# JJR	adjective, comparative	'bigger'
+# JJS	adjective, superlative	'biggest'
+# LS	list marker	1)
+# MD	modal	could, will
+# NN	noun, singular 'desk'
+# NNS	noun plural	'desks'
+# NNP	proper noun, singular	'Harrison'
+# NNPS	proper noun, plural	'Americans'
+# PDT	predeterminer	'all the kids'
+# POS	possessive ending	parent's
+# PRP	personal pronoun	I, he, she
+# PRP$	possessive pronoun	my, his, hers
+# RB	adverb	very, silently,
+# RBR	adverb, comparative	better
+# RBS	adverb, superlative	best
+# RP	particle	give up
+# TO	to	go 'to' the store.
+# UH	interjection	errrrrrrrm
+# VB	verb, base form	take
+# VBD	verb, past tense	took
+# VBG	verb, gerund/present participle	taking
+# VBN	verb, past participle	taken
+# VBP	verb, sing. present, non-3d	take
+# VBZ	verb, 3rd person sing. present	takes
+# WDT	wh-determiner	which
+# WP	wh-pronoun	who, what
+# WP$	possessive wh-pronoun	whose
+# WRB	wh-abverb	where, when
+from nltk.stem.porter import PorterStemmer
+porter_stemmer=PorterStemmer()
+porter_stemmer.stem("cars")
+from textblob import TextBlob
+text1="food made at the restaurant was very good"
+text2="India is a great country"  ### subjectivity means fact,polarity means more of a opinion
+blob1=TextBlob(text2)
+print(blob1.sentiment)
+import tensorflow as tf
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import style
+from matplotlib import pylab
+
+mnist=pd.read_csv(r"C:\Users\AKHIL\Desktop\R csv\MNIST_Train.csv")
+print(mnist.head())
+mnist.shape
+sen_col=mnist.iloc[0]## selects first row
+sen_col=sen_col.iloc[1:786,]
+len(sen_col)
+
+abc=np.array(sen_col)
+abc=abc.reshape(28,28)
+abc
+plt.imshow(abc)
+plt.imshow(abc,cmap='gist_gray')
+mnist_x=mnist.iloc[:,1:786]
+#print(mnist_x)
+mnist_y=mnist.iloc[:,0]
+#print(mnist_y)
+
+import sklearn
+from sklearn.model_selection import train_test_split
+mnist_x_train,mnist_x_test,mnist_y_train,mnist_y_test=train_test_split(mnist_x,mnist_y,test_size=.2,random_state=101)
+
+print(mnist_x_train.shape)
+print(mnist_x_test.shape)
+print(mnist_y_train.shape)
+print(mnist_y_test.shape)
+
+mnist_x_train=np.array(mnist_x_train)
+
+for i in range(len(mnist_x_train)):
+    mnist_x_train[i,].reshape(28,28)
+    
+    
+    
+mnist_x_test=np.array(mnist_x_test)
+
+for i in range(len(mnist_x_test)):
+    mnist_x_test[i,].reshape(28,28)
+    
+    
+mnist_x_train=tf.keras.utils.normalize(mnist_x_train)
+mnist_x_test=tf.keras.utils.normalize(mnist_x_test) 
+
+model=tf.keras.models.Sequential()
+model.add(tf.keras.layers.Flatten())
+#model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu))
+model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu))
+model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu))
+model.add(tf.keras.layers.Dense(128,activation=tf.nn.relu))
+model.add(tf.keras.layers.Dense(10,activation=tf.nn.softmax))
+model.compile(optimizer='adam',loss='sparse_categorical_crossentropy',metric=['accuracy'])
+
+mnist_y_train=np.array(mnist_y_train)
+model.fit(mnist_x_train,mnist_y_train,epochs=3)
+prd=model.predict(mnist_x_test)
+prd=model.predict_classes(mnist_x_test)
+prd
+
+from sklearn.metrics import confusion_matrix
+co = confusion_matrix(prd,mnist_y_test)
+print(co)
+
+accuracy=sum(co.diagonal())/co.sum()#####  to get the accuracy  ######################## 
+print("accuracy of the model is ::",accuracy)
+#import tensorflow.contrib.learn as learn   ### image recognition ######## 
+from sklearn.datasets import load_iris
+iris=load_iris()
+x= iris['data'];y =iris['target']
+
+feature_columns=[tf.contrib.layers.real_valued_column("",dimension=1)]
+
+classifier=learn.DNNClassifier(feature_columns=feature_columns,hidden_units=[10,20,10],n_classes=3)
+### Deep neural classifier has been created with 10,20,10 neurons
+
+classifier.fit(x,y,steps=200,batch_size=32)## creating the model
+pred_iris=classifier.predict(x)## doing the prediction
+
+from sklearn.metrics import classification_report,confusion_matrix
+pred_iris=list(pred_iris)
+print(classification_report(y,pred_iris))
+confusion_matrix(y,pred_iris)
